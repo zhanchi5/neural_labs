@@ -53,14 +53,21 @@ def get_F(X):
         # v2 = AND(v1, element[2])
         # v3 = AND(element[2], element[3])
         # v4 = OR(v2, v3)
-        # value = NOT(v4)
-        v1 = element[0]
-        v2 = element[1]
-        v3 = AND(v1, v2)
-        v4 = NOT(v3)
-        v5 = AND(element[2], element[3])
-        value = AND(v4, v5)
+        # value = NOT(v4) -- my function
+        v1 = NOT(element[1])
+        v2 = OR(v1, element[3])
+        v3 = AND(v2, element[0])
+        v4 = AND(element[0], element[2])
+        v5 = OR(v3, v4)
+        value = NOT(v5)
+        #v1 = element[0]
+        #v2 = element[1]
+        #v3 = AND(v1, v2)
+        #v4 = NOT(v3)
+        #v5 = AND(element[2], element[3])
+        #value = AND(v4, v5)
         F.append(int(value))
+    print(F)
     return F
 
 
@@ -72,57 +79,33 @@ def nnm_BF(X, W, F):
     eta = 0.3  # eductation norma
     k = 0
     iterations_number = 25
+    W = np.array(W)
     for element in X:
-        element.insert(0, 1)
-    # Initializing additional parameters to compute SSE
-    predictions = np.ones(len(F))     # vector for predictions
+        element.insert(0, 1)  # fictional variable x0 added
 
-    errors = []  # vector for errors (actual - predictions)
+    training_data = []
+    for i in range(0, len(F)):
+        training_data.append((np.array(X[i]), F[i]))
 
     while k < iterations_number:
+        predicitons = []
+        errors = []  # np.ones(len(F)) vector for errors (actual - predictions)
         print(f'Era number: {k}')
-        for i in range(0, len(X)):
-            result = np.dot(W, X[i])
-            error = F[i] - unit_step(result)
+        print(f'Weights: {W}')
+        for i in range(0, len(training_data)):
+            result = np.dot(W, training_data[i][0])
+            predicitons.append(unit_step(result))
+
+            expected = training_data[i][1]
+            error = expected - unit_step(result)
             errors.append(error)
-            print(eta)
-            print(error)
-            print(X[i])
-            W += eta * error * X[i]
+            W += [eta * error * x for x in X[i]]
+        print(f'Output vector y: {predicitons}')
+        print(f'Sum errors: {np.sum(errors)}')
         k += 1
-    pdb.set_trace()
-            # summation step
-#            f = np.dot(X[i], W)
-            # activation function
-
-#            if f > eta:
-#                predictions[i] = 1.
-#            else:
-#                predictions[i] = 0.
-
-            # updaiting weights
-#            for j in range(0, len(W)):
-#                W[j] = W[j] + eta * (F[i]-predictions[i]) * X[i][j]
-#        pdb.set_trace()
-
-       # for i in range(0, len(F)):
-       #     errors[i] = F[i]-predictions[i]
-       # print(np.sum(errors))
-        # sum_error = sum(errors-yhat_vec)
-#        print(f'Summary error E: {sum(errors - yhat_vec)}')
-#        for i in range(0, len(F)):
-#            errors[i] = (F[i] - yhat_vec[i])**2
-#        pdb.set_trace()
-
-    return W
-
-
-# def plot_data():
-#    pass
+    return
 
 
 if __name__ == "__main__":
     my_task = initialize()
-    weights = nnm_BF(X=my_task[0], W=my_task[1], F=my_task[2])
-    # print(f"The weights are: {weights}", "\n")
-    # print(f'Summary of errors: {summary_of_errors}', "\n")
+    nnm_BF(X=my_task[0], W=my_task[1], F=my_task[2])
