@@ -15,8 +15,6 @@ from operator import and_, or_, not_
 import numpy as np
 import plotly.offline as offline
 import plotly.graph_objs as go
-import matplotlib.pyplot as plt
-import matplotlib
 import pdb
 
 
@@ -121,8 +119,6 @@ def training_perceptron(initializer):
 
 
 def error_graph(error_values, k_s):
-    # fig = go.Figure()
-    fig = plt.figure()
     trace = go.Scatter(
         x=k_s,
         y=error_values,
@@ -130,7 +126,6 @@ def error_graph(error_values, k_s):
         name='Суммарная ошибка по эпохам обучения (пороговая ФА)'
     )
     offline.plot({'data': [trace]}, image='png', image_filename='task_1')
-    # pio.write_image(fig, 'plot_1.png')
     return
 
 
