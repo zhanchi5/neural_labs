@@ -13,7 +13,10 @@ f_a: 1,4
 
 from operator import and_, or_, not_
 import numpy as np
-# import plotly
+import plotly.offline as offline
+import plotly.graph_objs as go
+import matplotlib.pyplot as plt
+import matplotlib
 import pdb
 
 
@@ -47,23 +50,23 @@ def get_F(X):
     F = list()
     target_function = []
     for element in X:
-        # v1 = OR(element[0], element[1])
-        # v2 = AND(v1, element[2])
-        # v3 = AND(element[2], element[3])
-        # v4 = OR(v2, v3)
-        # value = NOT(v4) -- my function
+        v1 = OR(element[0], element[1])
+        v2 = AND(v1, element[2])
+        v3 = AND(element[2], element[3])
+        v4 = OR(v2, v3)
+        value = NOT(v4)  # - - my function
         # v1 = NOT(element[1])
         # v2 = OR(v1, element[3])
         # v3 = AND(v2, element[0])
         # v4 = AND(element[0], element[2])
         # v5 = OR(v3, v4)
         # value = NOT(v5)
-        v1 = element[0]
-        v2 = element[1]
-        v3 = AND(v1, v2)
-        v4 = NOT(v3)
-        v5 = AND(element[2], element[3])
-        value = AND(v4, v5)
+        # v1 = element[0]
+        # v2 = element[1]
+        # v3 = AND(v1, v2)
+        # v4 = NOT(v3)
+        # v5 = AND(element[2], element[3])
+        # value = AND(v4, v5)
         target_function.append(int(value))
     for element in X:
         element.insert(0, 1)  # fictional x0 for delta-rule
@@ -78,14 +81,16 @@ def unit_step(x): return 0. if x < 0 else 1.
 def training_perceptron(initializer):
     eta = 0.3  # training norma
     k = 0
-    # iterations_number = 25
     data, W = initializer
 
+    k_s = []  # Era numbers for graph
+    sum_errors = []  # Sum Error numbers by each Era for graph
     X = [x[0] for x in data]
     Y = [y[1] for y in data]
 
     y_pred = np.ones(len(data))
     errors = np.ones(len(data))
+
     while np.sum(errors) != 0:
         outputs = []
         print(f'{k}', end='; ')
@@ -99,7 +104,6 @@ def training_perceptron(initializer):
             outputs.append(y_net)
             y_pred[i] = y_net
             error = Y[i] - y_pred[i]
-            # errors += error
 
             for j in range(0, len(W)):
                 W[j] += eta * error * X[i][j]  # Updating weights
@@ -107,8 +111,26 @@ def training_perceptron(initializer):
             errors[i] = (Y[i] - y_pred[i]) ** 2
 
         print(f'{outputs}', end='; ')
+        sum_errors.append(sum(errors))
+        k_s.append(k)
         print(f'{np.sum(errors)}', end='\n')
         k += 1
+
+    error_graph(error_values=sum_errors, k_s=k_s)
+    return
+
+
+def error_graph(error_values, k_s):
+    # fig = go.Figure()
+    fig = plt.figure()
+    trace = go.Scatter(
+        x=k_s,
+        y=error_values,
+        mode='lines+markers',
+        name='Суммарная ошибка по эпохам обучения (пороговая ФА)'
+    )
+    offline.plot({'data': [trace]}, image='png', image_filename='task_1')
+    # pio.write_image(fig, 'plot_1.png')
     return
 
 
