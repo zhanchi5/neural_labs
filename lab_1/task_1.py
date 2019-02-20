@@ -75,43 +75,6 @@ def get_F(X):
 def unit_step(x): return 0. if x < 0 else 1.
 
 
-def nnm_BF(X, W, F):
-    # F - outputs
-    eta = 0.3  # eductation norma
-    k = 0
-    iterations_number = 25
-    W = np.array(W)
-    errors = np.ones(len(F))
-    for element in X:
-        element.insert(0, 1)  # fictional variable x0 added
-
-    pdb.set_trace()
-    training_data = []
-    for i in range(0, len(F)):
-        training_data.append((np.array(X[i]), F[i]))
-    predictions = np.ones(len(F))
-    # expectations = np.zeros(len(F))
-    while k < iterations_number:
-        print(f'Era number: {k}')
-        print(f'Weights: {W}')
-
-        for i in range(0, len(training_data)):
-            # vector for errors (actual - predictions)
-            result = np.dot(W, training_data[i][0])
-            predicted = unit_step(result)
-            predictions[i] = predicted
-
-            expected = training_data[i][1]
-            # expectations[i] = expected
-            error = expected - predicted
-            # errors[i] = error
-            W += [eta * error * x for x in X[i]]
-        pdb.set_trace()
-        k += 1
-    print(F)
-    return
-
-
 def training_perceptron(initializer):
     eta = 0.3  # training norma
     k = 0
@@ -152,4 +115,3 @@ def training_perceptron(initializer):
 if __name__ == "__main__":
     my_task = initialize()
     training_perceptron(my_task)
-    # nnm_BF(X=my_task[0], W=my_task[1], F=my_task[2])
