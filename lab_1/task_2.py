@@ -73,10 +73,12 @@ def get_F(X):
     return F
 
 
-def unit_step(x): return 0. if x < 0 else 1.
+def unit_step(x):
+    return 1/(1+np.exp(-x))
 
 
-def training_perceptron(initializer, eta=0.3):
+def training_perceptron(initializer):
+    eta = 0.3  # training norma
     k = 0
     data, W = initializer
 
