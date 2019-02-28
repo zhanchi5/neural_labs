@@ -73,50 +73,36 @@ def get_F(X):
     return F
 
 
-def unit_step(x):
-    return 1/(1+np.exp(-x))
+def find_net(inputs, weights):
+    return sum(map(lambda weights, inputs: weights * inputs, weights, inputs))
 
 
-def training_perceptron(initializer):
-    eta = 0.3  # training norma
-    k = 0
-    data, W = initializer
+def find_out(net):
+    return 0.5 * (np.tanh(net)+1)
 
-    k_s = []  # Era numbers for graph
-    sum_errors = []  # Sum Error numbers by each Era for graph
-    X = [x[0] for x in data]
-    Y = [y[1] for y in data]
 
-    y_pred = np.ones(len(data))
-    errors = np.ones(len(data))
+def find_y(out):
+    if out < 0.5:
+        return 0
+    else:
+        return 1
 
-    while np.sum(errors) != 0:
-        outputs = []
-        print(f'{k}', end='; ')
-        if k < 10:
-            print(f' {W}', end='; ')
-        else:
-            print(f'{W}', end='; ')
-        for i in range(0, len(X)):
-            net = np.dot(X[i], W)
-            y_net = unit_step(net)
-            outputs.append(y_net)
-            y_pred[i] = y_net
-            error = Y[i] - y_pred[i]
 
-            for j in range(0, len(W)):
-                W[j] += eta * error * X[i][j]  # Updating weights
-        for i in range(0, len(Y)):
-            errors[i] = (Y[i] - y_pred[i]) ** 2
+def find_delta(core_outputs, y):
+    return core_outputs - y
 
-        print(f'{outputs}', end='; ')
-        sum_errors.append(sum(errors))
-        k_s.append(k)
-        print(f'{np.sum(errors)}', end='\n')
-        k += 1
 
-    error_graph(error_values=sum_errors, k_s=k_s)
-    return
+def find_der(net):
+    temp = find_out(net)
+    return (np.cosh(temp)**2)/2
+
+
+def find_delta_weights(eta, delta, net, current_input):
+    return np.dot(eta * delta * find_der(net), current_input)
+
+
+def weights_correction(weights, eta, delta, net, current_input):
+    return [round(a+b, 3) for a, b in zip(weights, find_delta_weights(eta, delta, net, current_input))]
 
 
 def error_graph(error_values, k_s):
@@ -124,12 +110,33 @@ def error_graph(error_values, k_s):
         x=k_s,
         y=error_values,
         mode='lines+markers',
-        name='Суммарная ошибка по эпохам обучения (пороговая ФА)'
+        name='Суммарная ошибка по эпохам обучения (логическая ФА)'
     )
-    offline.plot({'data': [trace]}, image='png', image_filename='task_1')
+    offline.plot({'data': [trace]}, image='png', image_filename='task_2')
     return
 
 
 if __name__ == "__main__":
-    my_task = initialize()
-    training_perceptron(my_task)
+    F, W = initialize()
+    T = np.array([y[1] for y in F])
+    X = np.array([x[0] for x in F])
+
+    k_s = []
+    epoch = 0
+
+    Error = 1
+    errors = []
+    eta = 0.3
+    while Error != 0:
+        Error = 0
+        y = np.zeros(len(T))
+        for i in range(len(T)):
+            net = find_net(X[i], W)
+            y[i] = find_y(find_out(net))
+            W = weights_correction(W, eta, find_delta(T[i], y[i]), net, X[i])
+            Error += abs(y[i] - T[i])
+        errors.append(Error)
+        print(f'{epoch}; {W}; {y}; {Error}', end="\n")
+        k_s.append(epoch)
+        epoch += 1
+    error_graph(error_values=errors, k_s=k_s)

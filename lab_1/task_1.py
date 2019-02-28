@@ -52,19 +52,7 @@ def get_F(X):
         v2 = AND(v1, element[2])
         v3 = AND(element[2], element[3])
         v4 = OR(v2, v3)
-        value = NOT(v4)  # - - my function
-        # v1 = NOT(element[1])
-        # v2 = OR(v1, element[3])
-        # v3 = AND(v2, element[0])
-        # v4 = AND(element[0], element[2])
-        # v5 = OR(v3, v4)
-        # value = NOT(v5)
-        # v1 = element[0]
-        # v2 = element[1]
-        # v3 = AND(v1, v2)
-        # v4 = NOT(v3)
-        # v5 = AND(element[2], element[3])
-        # value = AND(v4, v5)
+        value = NOT(v4)
         target_function.append(int(value))
     for element in X:
         element.insert(0, 1)  # fictional x0 for delta-rule
