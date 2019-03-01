@@ -67,8 +67,8 @@ def find_net(inputs, weights):
 
 
 def find_out(net):
-    # return 0.5 * (np.tanh(net)+1)
-    return 0.5 * (net/(1 + abs(net)) + 1)
+    return 0.5 * (np.tanh(net)+1)
+    # return 0.5 * (net/(1 + abs(net)) + 1)
 
 
 def find_y(out):
@@ -83,9 +83,9 @@ def find_delta(core_outputs, y):
 
 
 def find_der(net):
-    # temp = find_out(net)
-    # return (np.cosh(temp)**2)/2
-    return 0.5 / ((abs(net) + 1))**2
+    temp = find_out(net)
+    return (np.cosh(temp)**2)/2
+    # return 0.5 / ((abs(net) + 1))**2
 
 
 def find_delta_weights(eta, delta, net, current_input):
@@ -103,7 +103,7 @@ def error_graph(error_values, k_s):
         mode='lines+markers',
         name='Суммарная ошибка по эпохам обучения (логическая ФА)'
     )
-    offline.plot({'data': [trace]}, image='png', image_filename='task_2')
+    offline.plot({'data': [trace]}, image='png', image_filename='task_3')
     return
 
 
@@ -112,14 +112,12 @@ if __name__ == "__main__":
     flag = False
     while not flag:
         F, W = initialize()
-        # F = np.array([1., 1., 1., 1., 0., 1., 1., 1.,
-        #             0., 1., 1., 1., 0., 1., 1., 1.])
         W = np.array([0., 0., 0., 0., 0.])
-        # T = np.array([float(y[1]) for y in F])
-        T = np.array([1., 1., 1., 1., 0., 1., 1., 1.,
-                      0., 1., 1., 1., 0., 1., 1., 1.])
-        # all_x = np.array([x[0] for x in F])
+        T = np.array([float(y[1]) for y in F])
+        # T = np.array([1., 1., 1., 1., 0., 1., 1., 1.,
+        #              0., 1., 1., 1., 0., 1., 1., 1.])
         all_x = np.array([x[0] for x in F])
+        # all_x = np.array([x[0] for x in F])
         learn_x = np.random.choice(
             np.arange(len(all_x)), size=3, replace=False)
         test_x = np.setdiff1d(np.arange(len(all_x)), learn_x)
@@ -142,7 +140,6 @@ if __name__ == "__main__":
             print(f'{epoch}; {W}; {y}; {Error}', end="\n")
             k_s.append(epoch)
             epoch += 1
-
         print("Testing started")
 
         answers = True
@@ -157,7 +154,7 @@ if __name__ == "__main__":
             print(f"{y}")
             print(f"{T}")
             flag = True
+            error_graph(error_values=errors, k_s=k_s)
         else:
             print("Test failed")
             flag = False
-        # error_graph(error_values=errors, k_s=k_s)
