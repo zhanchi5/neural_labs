@@ -68,7 +68,6 @@ def find_net(inputs, weights):
 
 def find_out(net):
     return 0.5 * (np.tanh(net)+1)
-    # return 0.5 * (net/(1 + abs(net)) + 1)
 
 
 def find_y(out):
@@ -85,7 +84,6 @@ def find_delta(core_outputs, y):
 def find_der(net):
     temp = find_out(net)
     return (np.cosh(temp)**2)/2
-    # return 0.5 / ((abs(net) + 1))**2
 
 
 def find_delta_weights(eta, delta, net, current_input):
@@ -114,10 +112,8 @@ if __name__ == "__main__":
         F, W = initialize()
         W = np.array([0., 0., 0., 0., 0.])
         T = np.array([float(y[1]) for y in F])
-        # T = np.array([1., 1., 1., 1., 0., 1., 1., 1.,
-        #              0., 1., 1., 1., 0., 1., 1., 1.])
+
         all_x = np.array([x[0] for x in F])
-        # all_x = np.array([x[0] for x in F])
         learn_x = np.random.choice(
             np.arange(len(all_x)), size=3, replace=False)
         test_x = np.setdiff1d(np.arange(len(all_x)), learn_x)
